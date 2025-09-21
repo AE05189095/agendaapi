@@ -4,12 +4,12 @@ FROM eclipse-temurin:17-jdk-jammy AS build
 # Define el directorio de trabajo dentro del contenedor
 WORKDIR /app
 
-# Copia los archivos de Maven y el código fuente
-COPY .mvn/ .mvn
-COPY mvnw pom.xml ./
+# Copia los archivos de Maven y el código fuente desde la carpeta 'agenta'
+COPY agenta/.mvn/ .mvn
+COPY agenta/mvnw agenta/pom.xml ./
 RUN ./mvnw dependency:go-offline
 
-COPY src ./src
+COPY agenta/src ./src
 
 # Compila el proyecto y crea el archivo .jar
 RUN ./mvnw clean package -DskipTests

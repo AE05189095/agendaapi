@@ -2,11 +2,11 @@
 FROM eclipse-temurin:17-jdk-jammy AS build
 WORKDIR /app
 
-# Copiar archivos de Gradle
-COPY gradlew .
-COPY gradle gradle
-COPY build.gradle settings.gradle ./
-COPY src ./src
+# Copiar archivos de Gradle desde la carpeta agenda
+COPY agenda/gradlew .
+COPY agenda/gradle gradle
+COPY agenda/build.gradle agenda/settings.gradle ./
+COPY agenda/src ./src
 
 # Dar permisos de ejecución a gradlew
 RUN chmod +x gradlew
@@ -26,4 +26,5 @@ ENV PORT=10000
 
 # Comando para correr la app
 ENTRYPOINT ["java","-jar","app.jar"]
+
 

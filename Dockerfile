@@ -2,25 +2,28 @@
 FROM eclipse-temurin:17-jdk-jammy AS build
 WORKDIR /app
 
-# Copia archivos de Maven y dependencias
-COPY agenda/.mvn/ .mvn
-COPY agenda/mvnw agenda/pom.xml ./
-RUN ./mvnw dependency:go-offline
+# Copiar archivos de Gradle
+COPY gradlew .
+COPY gradle gradle
+COPY build.gradle settings.gradle ./
+COPY src ./src
 
-# Copia código fuente y compila
-COPY agenda/src ./src
-RUN ./mvnw clean package -DskipTests
+# Dar permisos de ejecución a gradlew
+RUN chmod +x gradlew
+
+# Build del proyecto
+RUN ./gradlew build -x test
 
 # Stage 2: Runtime
 FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 
-# Copiar el jar generado desde la etapa de build
-COPY --from=build /app/target/*.jar ./app.jar
+# Copiar jar generado desde build
+COPY --from=build /app/build/libs/*.jar ./app.jar
 
-# Render define el puerto en la variable $PORT
+# Puerto
 ENV PORT=10000
 
-# Arrancar la aplicación
+# Comando para correr la app
 ENTRYPOINT ["java","-jar","app.jar"]
 
